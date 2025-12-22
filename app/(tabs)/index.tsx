@@ -1,96 +1,153 @@
-import {Image} from 'expo-image';
-import {Platform, StyleSheet} from 'react-native';
-
-import {HelloWave} from '@/components/hello-wave';
-import ParallaxScrollView from '@/components/parallax-scroll-view';
+import {StyleSheet} from 'react-native';
 import {ThemedText} from '@/components/themed-text';
 import {ThemedView} from '@/components/themed-view';
-import {Link} from 'expo-router';
+import {EffectCallback, useState} from "react";
+import {useFocusEffect} from "@react-navigation/core";
+import {fetchSettings} from "@/utils/fetch-settings";
+import dayjs from "dayjs";
 
 export default function HomeScreen() {
-  return (
-    <ParallaxScrollView
-      headerBackgroundColor={{light: '#A1CEDC', dark: '#1D3D47'}}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave/>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <Link.Trigger>
-          <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        </Link.Trigger>
-        <Link.Preview/>
-        <Link.Menu>
-          <Link.MenuAction title="Action" icon="cube" onPress={() => alert('Action pressed')}/>
-          <Link.MenuAction
-            title="Share"
-            icon="square.and.arrow.up"
-            onPress={() => alert('Share pressed')}
-          />
-          <Link.Menu title="More" icon="ellipsis">
-            <Link.MenuAction
-              title="Delete"
-              icon="trash"
-              destructive
-              onPress={() => alert('Delete pressed')}
-            />
-          </Link.Menu>
-        </Link.Menu>
+  const [soberDate, setSoberDate] = useState<string | null>(null);
+  const [soberSavings, setSoberSavings] = useState<string | null>(null);
+  const [smokeDate, setSmokeDate] = useState<string | null>(null);
+  const [smokeSavings, setSmokeSavings] = useState<string | null>(null);
 
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
+  // Helper functions to safely parse and format dates/numbers
+  const daysSince = (isoDate: string | null) => {
+    if (!isoDate) return 0;
+    const d = dayjs(isoDate);
+    return d.isValid() ? dayjs().diff(d, 'days') : 0;
+  }
+
+  const breakdown = (isoDate: string | null) => {
+    if (!isoDate) return {years: 0, months: 0, days: 0};
+    const d = dayjs(isoDate);
+    if (!d.isValid()) return {years: 0, months: 0, days: 0};
+    const years = dayjs().diff(d, 'years');
+    const months = dayjs().diff(d, 'months') % 12;
+    const days = dayjs().diff(d, 'days') % 30;
+    return {years, months, days};
+  }
+
+  const parseSavings = (value: string | null) => {
+    if (!value) return 0;
+    const n = parseFloat(value.replace(',', '.'));
+    return isNaN(n) ? 0 : n;
+  }
+
+  const {years: soberYears, months: soberMonths, days: soberDays} = breakdown(soberDate);
+  const totalSoberSavings = daysSince(soberDate) * parseSavings(soberSavings);
+
+  const {years: smokeYears, months: smokeMonths, days: smokeDays} = breakdown(smokeDate);
+  const totalSmokeSavings = daysSince(smokeDate) * parseSavings(smokeSavings);
+
+  useFocusEffect(() => fetchSettings(setSoberDate, setSoberSavings, setSmokeDate, setSmokeSavings) as unknown as EffectCallback);
+
+  return (
+    <ThemedView style={styles.pageWrapper}>
+      <ThemedView>
+        <ThemedView style={{marginBottom: 60}}>
+          <ThemedText type="title">Congratulations, bro!</ThemedText>
+        </ThemedView>
+        {soberDate ? (
+          <ThemedView style={{marginBottom: 40}}>
+            <ThemedText type="subtitle" style={{marginBottom: 20}}>Sober for</ThemedText>
+            <ThemedView>
+              <ThemedView style={{flexDirection: "row", justifyContent: "center"}}>
+                {soberYears ? (
+                  <ThemedView style={{alignItems: 'center', marginRight: 10}}>
+                    <ThemedText type="title">
+                      {soberYears}
+                    </ThemedText>
+                    <ThemedText>years</ThemedText>
+                  </ThemedView>
+                ) : null}
+                {soberMonths ? (
+                  <ThemedView style={{alignItems: 'center', marginRight: 10}}>
+                    <ThemedText type="title">
+                      {soberMonths}
+                    </ThemedText>
+                    <ThemedText>months</ThemedText>
+                  </ThemedView>
+                ) : null}
+                {soberDays ? (
+                  <ThemedView style={{alignItems: 'center', marginRight: 10}}>
+                    <ThemedText type="title">
+                      {soberDays}
+                    </ThemedText>
+                    <ThemedText>days</ThemedText>
+                  </ThemedView>
+                ) : null}
+              </ThemedView>
+              <ThemedView style={{flexDirection: "row", justifyContent: "flex-end"}}>
+                <ThemedText type="subtitle">
+                  {totalSoberSavings}€
+                  saved
+                </ThemedText>
+              </ThemedView>
+            </ThemedView>
+          </ThemedView>
+        ) : null}
+
+        {smokeDate ? (
+          <ThemedView>
+            <ThemedText type="subtitle" style={{marginBottom: 20}}>Smoke free for</ThemedText>
+            <ThemedView>
+              <ThemedView style={{flexDirection: "row", justifyContent: "center"}}>
+                {smokeYears ? (
+                  <ThemedView style={{alignItems: 'center', marginRight: 10}}>
+                    <ThemedText type="title">
+                      {smokeYears}
+                    </ThemedText>
+                    <ThemedText>years</ThemedText>
+                  </ThemedView>
+                ) : null}
+                {smokeMonths ? (
+                  <ThemedView style={{alignItems: 'center', marginRight: 10}}>
+                    <ThemedText type="title">
+                      {smokeMonths}
+                    </ThemedText>
+                    <ThemedText>months</ThemedText>
+                  </ThemedView>
+                ) : null}
+                {smokeDays ? (
+                  <ThemedView style={{alignItems: 'center', marginRight: 10}}>
+                    <ThemedText type="title">
+                      {smokeDays}
+                    </ThemedText>
+                    <ThemedText>days</ThemedText>
+                  </ThemedView>
+                ) : null}
+              </ThemedView>
+              <ThemedView style={{flexDirection: "row", justifyContent: "flex-end"}}>
+                <ThemedText type="subtitle">
+                  {totalSmokeSavings}€
+                  saved
+                </ThemedText>
+              </ThemedView>
+            </ThemedView>
+          </ThemedView>
+        ) : null}
+      </ThemedView>
+      <ThemedView style={{alignItems: 'flex-end'}}>
+        <ThemedText type="subtitle">
+          Total savings
+        </ThemedText>
+        <ThemedText type="title">
+          {totalSoberSavings + totalSmokeSavings}€
         </ThemedText>
       </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+    </ThemedView>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
-  },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
+  pageWrapper: {
+    padding: 20,
+    paddingBlock: 40,
+    marginTop: 20,
+    gap: 40,
+    flexGrow: 1,
+    justifyContent: 'space-between',
   },
 });

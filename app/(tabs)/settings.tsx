@@ -7,43 +7,19 @@ import {DarkTheme} from "@react-navigation/native";
 import {DateTimePickerAndroid} from "@react-native-community/datetimepicker";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {useEffect, useState} from "react";
+import {fetchSettings} from "@/utils/fetch-settings";
 
 export default function TabTwoScreen() {
   const [soberDate, setSoberDate] = useState<string | null>(null);
   const [soberSavings, setSoberSavings] = useState<string | null>(null);
-
   const [smokeDate, setSmokeDate] = useState<string | null>(null);
   const [smokeSavings, setSmokeSavings] = useState<string | null>(null);
 
-  const fetchSoberDate = async () => {
-    const date = await AsyncStorage.getItem('soberDate');
-    setSoberDate(date);
-  }
-
-  const fetchSoberSavings = async () => {
-    const savings = await AsyncStorage.getItem('soberSavings');
-    setSoberSavings(savings);
-  }
-
-  const fetchSmokeDate = async () => {
-    const date = await AsyncStorage.getItem('smokeDate');
-    setSmokeDate(date);
-  }
-
-  const fetchSmokeSavings = async () => {
-    const savings = await AsyncStorage.getItem('smokeSavings');
-    setSmokeSavings(savings);
-  }
-  useEffect(() => {
-    fetchSoberDate();
-    fetchSoberSavings();
-    fetchSmokeDate();
-    fetchSmokeSavings();
-  }, []);
+  useEffect(() => fetchSettings(setSoberDate, setSoberSavings, setSmokeDate, setSmokeSavings), []);
 
   return (
     <ThemedView
-      style={styles.settingsWrapper}>
+      style={styles.pageWrapper}>
       <ThemedView>
         <ThemedText
           type="title">
@@ -57,8 +33,8 @@ export default function TabTwoScreen() {
           Sober date:
         </ThemedText>
         <ThemedView style={{flexDirection: "row", justifyContent: "space-between", alignItems: "baseline"}}>
-          <ThemedText>
-            {soberDate ? new Date(soberDate as unknown as string).toLocaleDateString() : "--/--/----"}
+          <ThemedText type="defaultSemiBold">
+            {soberDate ? new Date(soberDate).toLocaleDateString() : "--/--/----"}
           </ThemedText>
           <TouchableHighlight
             onPress={() => DateTimePickerAndroid.open({
@@ -68,6 +44,7 @@ export default function TabTwoScreen() {
               style: {backgroundColor: DarkTheme.colors.card},
               onChange: async (_event, date) => {
                 if (date) {
+                  date.setHours(0, 0, 0, 0);
                   setSoberDate(date.toISOString());
                   await AsyncStorage.setItem('soberDate', date.toISOString());
                 }
@@ -100,8 +77,8 @@ export default function TabTwoScreen() {
           Quit smoking date:
         </ThemedText>
         <ThemedView style={{flexDirection: "row", justifyContent: "space-between", alignItems: "baseline"}}>
-          <ThemedText>
-            {smokeDate ? new Date(smokeDate as unknown as string).toLocaleDateString() : "--/--/----"}
+          <ThemedText type="defaultSemiBold">
+            {smokeDate ? new Date(smokeDate).toLocaleDateString() : "--/--/----"}
           </ThemedText>
           <TouchableHighlight
             onPress={() => DateTimePickerAndroid.open({
@@ -111,6 +88,7 @@ export default function TabTwoScreen() {
               style: {backgroundColor: DarkTheme.colors.card},
               onChange: async (_event, date) => {
                 if (date) {
+                  date.setHours(0, 0, 0, 0);
                   setSmokeDate(date.toISOString());
                   await AsyncStorage.setItem('smokeDate', date.toISOString());
                 }
@@ -141,10 +119,11 @@ export default function TabTwoScreen() {
 }
 
 const styles = StyleSheet.create({
-  settingsWrapper: {
+  pageWrapper: {
     padding: 20,
     marginTop: 40,
-    gap: 40
+    gap: 40,
+    flexGrow: 1,
   },
   input: {
     borderBottomWidth: 1,
