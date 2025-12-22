@@ -27,37 +27,59 @@ export default function TabTwoScreen() {
         </ThemedText>
       </ThemedView>
 
-      <ThemedView>
+      <ThemedView style={{marginBottom: 20}}>
         <ThemedText
-          type="subtitle" style={{marginBottom: 0}}>
-          Sober date:
+          type="subtitle" style={{marginBottom: 15}}>
+          Alcohol free
         </ThemedText>
-        <ThemedView style={{flexDirection: "row", justifyContent: "space-between", alignItems: "baseline"}}>
-          <ThemedText type="defaultSemiBold">
-            {soberDate ? new Date(soberDate).toLocaleDateString() : "--/--/----"}
-          </ThemedText>
-          <TouchableHighlight
-            onPress={() => DateTimePickerAndroid.open({
-              mode: "date",
-              value: soberDate ? new Date(soberDate) : new Date(),
-              maximumDate: new Date(),
-              style: {backgroundColor: DarkTheme.colors.card},
-              onChange: async (_event, date) => {
-                if (date) {
-                  date.setHours(0, 0, 0, 0);
-                  setSoberDate(date.toISOString());
-                  await AsyncStorage.setItem('soberDate', date.toISOString());
+        <ThemedView style={{flexDirection: "row", justifyContent: "space-between", alignItems: "center"}}>
+          <ThemedView style={{flexDirection: 'row', alignItems: 'center'}}>
+            <ThemedText type="defaultSemiBold">
+              {soberDate ? new Date(soberDate).toLocaleDateString() : "--/--/----"}
+            </ThemedText>
+            <TouchableHighlight
+              onPress={() => DateTimePickerAndroid.open({
+                mode: 'date',
+                value: soberDate ? new Date(soberDate) : new Date(),
+                maximumDate: new Date(),
+                style: {backgroundColor: DarkTheme.colors.card},
+                onChange: async (_event, date) => {
+                  if (date) {
+                    setSoberDate(date.toISOString());
+                    await AsyncStorage.setItem('soberDate', date.toISOString());
+                  }
                 }
-              }
-            })}
-            style={{padding: 10, borderRadius: 8}}>
-            <IconSymbol name="pencil" color={DarkTheme.colors.text}/>
-          </TouchableHighlight>
+              })}
+              style={{padding: 10, borderRadius: 8}}>
+              <IconSymbol name="pencil" color={DarkTheme.colors.text}/>
+            </TouchableHighlight>
+          </ThemedView>
+          <ThemedView style={{flexDirection: 'row', alignItems: 'center'}}>
+            <ThemedText type="defaultSemiBold">
+              {soberDate ? new Date(soberDate).toLocaleTimeString() : '--:--'}
+            </ThemedText>
+            <TouchableHighlight
+              onPress={() => DateTimePickerAndroid.open({
+                mode: 'time',
+                value: soberDate ? new Date(soberDate) : new Date(),
+                maximumDate: new Date(),
+                style: {backgroundColor: DarkTheme.colors.card},
+                onChange: async (_event, date) => {
+                  if (date) {
+                    setSoberDate(date.toISOString());
+                    await AsyncStorage.setItem('soberDate', date.toISOString());
+                  }
+                }
+              })}
+              style={{padding: 10, borderRadius: 8}}>
+              <IconSymbol name="pencil" color={DarkTheme.colors.text}/>
+            </TouchableHighlight>
+          </ThemedView>
         </ThemedView>
-        <ThemedView style={{flexDirection: "row", alignItems: "baseline"}}>
+        <ThemedView style={{flexDirection: "row", alignItems: "center"}}>
           <TextInput value={soberSavings || undefined}
                      editable={!!soberDate}
-                     placeholder="Insert daily savings"
+                     placeholder="Savings"
                      placeholderTextColor={DarkTheme.colors.text}
                      style={styles.input}
                      keyboardType="number-pad"
@@ -66,42 +88,64 @@ export default function TabTwoScreen() {
                        await AsyncStorage.setItem('soberSavings', event.nativeEvent.text)
                      }}/>
           <ThemedText>
-            €
+            €/day
           </ThemedText>
         </ThemedView>
       </ThemedView>
 
       <ThemedView>
         <ThemedText
-          type="subtitle" style={{marginBottom: 0}}>
-          Quit smoking date:
+          type="subtitle" style={{marginBottom: 15}}>
+          Smoke free
         </ThemedText>
-        <ThemedView style={{flexDirection: "row", justifyContent: "space-between", alignItems: "baseline"}}>
-          <ThemedText type="defaultSemiBold">
-            {smokeDate ? new Date(smokeDate).toLocaleDateString() : "--/--/----"}
-          </ThemedText>
-          <TouchableHighlight
-            onPress={() => DateTimePickerAndroid.open({
-              mode: "date",
-              value: smokeDate ? new Date(smokeDate) : new Date(),
-              maximumDate: new Date(),
-              style: {backgroundColor: DarkTheme.colors.card},
-              onChange: async (_event, date) => {
-                if (date) {
-                  date.setHours(0, 0, 0, 0);
-                  setSmokeDate(date.toISOString());
-                  await AsyncStorage.setItem('smokeDate', date.toISOString());
+        <ThemedView style={{flexDirection: "row", justifyContent: "space-between", alignItems: "center"}}>
+          <ThemedView style={{flexDirection: 'row', alignItems: 'center'}}>
+            <ThemedText type="defaultSemiBold">
+              {smokeDate ? new Date(smokeDate).toLocaleDateString() : "--/--/----"}
+            </ThemedText>
+            <TouchableHighlight
+              onPress={() => DateTimePickerAndroid.open({
+                mode: 'date',
+                value: smokeDate ? new Date(smokeDate) : new Date(),
+                maximumDate: new Date(),
+                style: {backgroundColor: DarkTheme.colors.card},
+                onChange: async (_event, date) => {
+                  if (date) {
+                    setSmokeDate(date.toISOString());
+                    await AsyncStorage.setItem('smokeDate', date.toISOString());
+                  }
                 }
-              }
-            })}
-            style={{padding: 10, borderRadius: 8}}>
-            <IconSymbol name="pencil" color={DarkTheme.colors.text}/>
-          </TouchableHighlight>
+              })}
+              style={{padding: 10, borderRadius: 8}}>
+              <IconSymbol name="pencil" color={DarkTheme.colors.text}/>
+            </TouchableHighlight>
+          </ThemedView>
+          <ThemedView style={{flexDirection: 'row', alignItems: 'center'}}>
+            <ThemedText type="defaultSemiBold">
+              {smokeDate ? new Date(smokeDate).toLocaleTimeString() : '--:--'}
+            </ThemedText>
+            <TouchableHighlight
+              onPress={() => DateTimePickerAndroid.open({
+                mode: 'time',
+                value: smokeDate ? new Date(smokeDate) : new Date(),
+                maximumDate: new Date(),
+                style: {backgroundColor: DarkTheme.colors.card},
+                onChange: async (_event, date) => {
+                  if (date) {
+                    setSmokeDate(date.toISOString());
+                    await AsyncStorage.setItem('smokeDate', date.toISOString());
+                  }
+                }
+              })}
+              style={{padding: 10, borderRadius: 8}}>
+              <IconSymbol name="pencil" color={DarkTheme.colors.text}/>
+            </TouchableHighlight>
+          </ThemedView>
         </ThemedView>
-        <ThemedView style={{flexDirection: "row", alignItems: "baseline"}}>
+        <ThemedView style={{flexDirection: "row", alignItems: "center"}}>
           <TextInput value={smokeSavings || undefined}
                      editable={!!smokeDate}
-                     placeholder="Insert daily savings"
+                     placeholder="Savings"
                      placeholderTextColor={DarkTheme.colors.text}
                      style={styles.input}
                      keyboardType="number-pad"
@@ -110,7 +154,7 @@ export default function TabTwoScreen() {
                        await AsyncStorage.setItem('smokeSavings', event.nativeEvent.text)
                      }}/>
           <ThemedText>
-            €
+            €/day
           </ThemedText>
         </ThemedView>
       </ThemedView>
