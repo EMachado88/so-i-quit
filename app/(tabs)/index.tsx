@@ -47,7 +47,8 @@ export default function HomeScreen() {
     <ThemedView style={styles.pageWrapper}>
       <ThemedView>
         <ThemedView style={{marginBottom: 60}}>
-          <ThemedText type="title">Congratulations, bro!</ThemedText>
+          <ThemedText
+            type="title">{soberDate || smokeDate ? 'Congrats, bro!' : 'No data saved in settings'}</ThemedText>
         </ThemedView>
         {soberDate ? (
           <ThemedView style={{marginBottom: 40}}>
@@ -81,8 +82,7 @@ export default function HomeScreen() {
               </ThemedView>
               <ThemedView style={{flexDirection: "row", justifyContent: "flex-end"}}>
                 <ThemedText type="subtitle">
-                  {totalSoberSavings}€
-                  saved
+                  {totalSoberSavings > 0 ? `${totalSoberSavings}€ saved` : null}
                 </ThemedText>
               </ThemedView>
             </ThemedView>
@@ -121,8 +121,7 @@ export default function HomeScreen() {
               </ThemedView>
               <ThemedView style={{flexDirection: "row", justifyContent: "flex-end"}}>
                 <ThemedText type="subtitle">
-                  {totalSmokeSavings}€
-                  saved
+                  {totalSmokeSavings > 0 ? `${totalSmokeSavings}€ saved` : null}
                 </ThemedText>
               </ThemedView>
             </ThemedView>
@@ -131,10 +130,10 @@ export default function HomeScreen() {
       </ThemedView>
       <ThemedView style={{alignItems: 'flex-end'}}>
         <ThemedText type="subtitle">
-          Total savings
+          {totalSoberSavings + totalSmokeSavings > 0 ? 'Total savings' : 'No savings yet'}
         </ThemedText>
         <ThemedText type="title">
-          {totalSoberSavings + totalSmokeSavings}€
+          {totalSoberSavings + totalSmokeSavings > 0 ? `${totalSoberSavings + totalSmokeSavings}€` : null}
         </ThemedText>
       </ThemedView>
     </ThemedView>
