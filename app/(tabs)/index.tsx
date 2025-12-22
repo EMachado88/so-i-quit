@@ -144,8 +144,6 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   pageWrapper: {
     padding: 20,
-    paddingBlock: 40,
-    marginTop: 20,
     gap: 40,
     flexGrow: 1,
     justifyContent: 'space-between',

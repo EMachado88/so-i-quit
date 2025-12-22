@@ -121,7 +121,6 @@ export default function TabTwoScreen() {
 const styles = StyleSheet.create({
   pageWrapper: {
     padding: 20,
-    marginTop: 40,
     gap: 40,
     flexGrow: 1,
   },
