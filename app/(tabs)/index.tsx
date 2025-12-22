@@ -26,7 +26,8 @@ export default function HomeScreen() {
     const years = dayjs().diff(d, 'years');
     const months = dayjs().diff(d, 'months') % 12;
     const days = dayjs().diff(d, 'days') % 30;
-    return {years, months, days};
+    const hours = dayjs().diff(d, 'hours') % 24;
+    return {years, months, days, hours};
   }
 
   const parseSavings = (value: string | null) => {
@@ -35,10 +36,10 @@ export default function HomeScreen() {
     return isNaN(n) ? 0 : n;
   }
 
-  const {years: soberYears, months: soberMonths, days: soberDays} = breakdown(soberDate);
+  const {years: soberYears, months: soberMonths, days: soberDays, hours: soberHours} = breakdown(soberDate);
   const totalSoberSavings = daysSince(soberDate) * parseSavings(soberSavings);
 
-  const {years: smokeYears, months: smokeMonths, days: smokeDays} = breakdown(smokeDate);
+  const {years: smokeYears, months: smokeMonths, days: smokeDays, hours: smokeHours} = breakdown(smokeDate);
   const totalSmokeSavings = daysSince(smokeDate) * parseSavings(smokeSavings);
 
   useFocusEffect(() => fetchSettings(setSoberDate, setSoberSavings, setSmokeDate, setSmokeSavings) as unknown as EffectCallback);
@@ -79,6 +80,14 @@ export default function HomeScreen() {
                     <ThemedText>days</ThemedText>
                   </ThemedView>
                 ) : null}
+                {soberHours ? (
+                  <ThemedView style={{alignItems: 'center', marginRight: 10}}>
+                    <ThemedText type="title">
+                      {soberHours}
+                    </ThemedText>
+                    <ThemedText>hours</ThemedText>
+                  </ThemedView>
+                ) : null}
               </ThemedView>
               <ThemedView style={{flexDirection: "row", justifyContent: "flex-end"}}>
                 <ThemedText type="subtitle">
@@ -116,6 +125,14 @@ export default function HomeScreen() {
                       {smokeDays}
                     </ThemedText>
                     <ThemedText>days</ThemedText>
+                  </ThemedView>
+                ) : null}
+                {smokeHours ? (
+                  <ThemedView style={{alignItems: 'center', marginRight: 10}}>
+                    <ThemedText type="title">
+                      {smokeHours}
+                    </ThemedText>
+                    <ThemedText>hours</ThemedText>
                   </ThemedView>
                 ) : null}
               </ThemedView>
