@@ -1,12 +1,16 @@
-import {StyleSheet} from 'react-native';
+import {StyleSheet, View} from 'react-native';
 import {ThemedText} from '@/components/themed-text';
-import {ThemedView} from '@/components/themed-view';
 import {EffectCallback, useState} from "react";
 import {useFocusEffect} from "@react-navigation/core";
 import {fetchSettings} from "@/utils/fetch-settings";
 import dayjs from "dayjs";
+import {useColorScheme} from "@/hooks/use-color-scheme";
+import {themes} from "@/constants/theme";
+import Card from "react-native-paper/src/components/Card/Card";
 
 export default function HomeScreen() {
+  const colorScheme = useColorScheme() ?? 'light';
+
   const [soberDate, setSoberDate] = useState<string | null>(null);
   const [soberSavings, setSoberSavings] = useState<string | null>(null);
   const [smokeDate, setSmokeDate] = useState<string | null>(null);
@@ -45,115 +49,131 @@ export default function HomeScreen() {
   useFocusEffect(() => fetchSettings(setSoberDate, setSoberSavings, setSmokeDate, setSmokeSavings) as unknown as EffectCallback);
 
   return (
-    <ThemedView style={styles.pageWrapper}>
-      <ThemedView>
-        <ThemedView style={{marginBottom: 60}}>
+    <View style={styles.pageWrapper}>
+      <View style={{gap: 20}}>
+        <View style={{marginBottom: 20}}>
           <ThemedText
             type="title">{soberDate || smokeDate ? 'Congrats, bro!' : 'No data saved in settings'}</ThemedText>
-        </ThemedView>
+        </View>
         {soberDate ? (
-          <ThemedView style={{marginBottom: 40}}>
-            <ThemedText type="subtitle" style={{marginBottom: 20}}>Sober for</ThemedText>
-            <ThemedView>
-              <ThemedView style={{flexDirection: "row", justifyContent: "center"}}>
-                {soberYears ? (
-                  <ThemedView style={{alignItems: 'center', marginRight: 10}}>
-                    <ThemedText type="title">
-                      {soberYears}
-                    </ThemedText>
-                    <ThemedText>years</ThemedText>
-                  </ThemedView>
-                ) : null}
-                {soberMonths ? (
-                  <ThemedView style={{alignItems: 'center', marginRight: 10}}>
-                    <ThemedText type="title">
-                      {soberMonths}
-                    </ThemedText>
-                    <ThemedText>months</ThemedText>
-                  </ThemedView>
-                ) : null}
-                {soberDays ? (
-                  <ThemedView style={{alignItems: 'center', marginRight: 10}}>
-                    <ThemedText type="title">
-                      {soberDays}
-                    </ThemedText>
-                    <ThemedText>days</ThemedText>
-                  </ThemedView>
-                ) : null}
-                {soberHours ? (
-                  <ThemedView style={{alignItems: 'center', marginRight: 10}}>
-                    <ThemedText type="title">
-                      {soberHours}
-                    </ThemedText>
-                    <ThemedText>hours</ThemedText>
-                  </ThemedView>
-                ) : null}
-              </ThemedView>
-              <ThemedView style={{flexDirection: "row", justifyContent: "flex-end"}}>
+          <Card>
+            <Card.Title title="Sober for"/>
+            <Card.Content>
+              <View>
+                <View>
+                  <View style={{flexDirection: "row", justifyContent: "center"}}>
+                    {soberYears ? (
+                      <View style={{alignItems: 'center', marginRight: 10}}>
+                        <ThemedText type="title">
+                          {soberYears}
+                        </ThemedText>
+                        <ThemedText>years</ThemedText>
+                      </View>
+                    ) : null}
+                    {soberMonths ? (
+                      <View style={{alignItems: 'center', marginRight: 10}}>
+                        <ThemedText type="title">
+                          {soberMonths}
+                        </ThemedText>
+                        <ThemedText>months</ThemedText>
+                      </View>
+                    ) : null}
+                    {soberDays ? (
+                      <View style={{alignItems: 'center', marginRight: 10}}>
+                        <ThemedText type="title">
+                          {soberDays}
+                        </ThemedText>
+                        <ThemedText>days</ThemedText>
+                      </View>
+                    ) : null}
+                    {soberHours ? (
+                      <View style={{alignItems: 'center', marginRight: 10}}>
+                        <ThemedText type="title">
+                          {soberHours}
+                        </ThemedText>
+                        <ThemedText>hours</ThemedText>
+                      </View>
+                    ) : null}
+                  </View>
+                </View>
+              </View>
+            </Card.Content>
+            <Card.Actions>
+              <View style={{flexDirection: "row", justifyContent: "flex-end"}}>
                 <ThemedText type="subtitle">
                   {totalSoberSavings > 0 ? `${totalSoberSavings}€ saved` : null}
                 </ThemedText>
-              </ThemedView>
-            </ThemedView>
-          </ThemedView>
+              </View>
+            </Card.Actions>
+          </Card>
         ) : null}
 
         {smokeDate ? (
-          <ThemedView>
-            <ThemedText type="subtitle" style={{marginBottom: 20}}>Smoke free for</ThemedText>
-            <ThemedView>
-              <ThemedView style={{flexDirection: "row", justifyContent: "center"}}>
-                {smokeYears ? (
-                  <ThemedView style={{alignItems: 'center', marginRight: 10}}>
-                    <ThemedText type="title">
-                      {smokeYears}
-                    </ThemedText>
-                    <ThemedText>years</ThemedText>
-                  </ThemedView>
-                ) : null}
-                {smokeMonths ? (
-                  <ThemedView style={{alignItems: 'center', marginRight: 10}}>
-                    <ThemedText type="title">
-                      {smokeMonths}
-                    </ThemedText>
-                    <ThemedText>months</ThemedText>
-                  </ThemedView>
-                ) : null}
-                {smokeDays ? (
-                  <ThemedView style={{alignItems: 'center', marginRight: 10}}>
-                    <ThemedText type="title">
-                      {smokeDays}
-                    </ThemedText>
-                    <ThemedText>days</ThemedText>
-                  </ThemedView>
-                ) : null}
-                {smokeHours ? (
-                  <ThemedView style={{alignItems: 'center', marginRight: 10}}>
-                    <ThemedText type="title">
-                      {smokeHours}
-                    </ThemedText>
-                    <ThemedText>hours</ThemedText>
-                  </ThemedView>
-                ) : null}
-              </ThemedView>
-              <ThemedView style={{flexDirection: "row", justifyContent: "flex-end"}}>
+          <Card>
+            <Card.Title title="Smoke free for"/>
+            <Card.Content>
+              <View>
+                <View>
+                  <View style={{flexDirection: "row", justifyContent: "center"}}>
+                    {smokeYears ? (
+                      <View style={{alignItems: 'center', marginRight: 10}}>
+                        <ThemedText type="title">
+                          {smokeYears}
+                        </ThemedText>
+                        <ThemedText>years</ThemedText>
+                      </View>
+                    ) : null}
+                    {smokeMonths ? (
+                      <View style={{alignItems: 'center', marginRight: 10}}>
+                        <ThemedText type="title">
+                          {smokeMonths}
+                        </ThemedText>
+                        <ThemedText>months</ThemedText>
+                      </View>
+                    ) : null}
+                    {smokeDays ? (
+                      <View style={{alignItems: 'center', marginRight: 10}}>
+                        <ThemedText type="title">
+                          {smokeDays}
+                        </ThemedText>
+                        <ThemedText>days</ThemedText>
+                      </View>
+                    ) : null}
+                    {smokeHours ? (
+                      <View style={{alignItems: 'center', marginRight: 10}}>
+                        <ThemedText type="title">
+                          {smokeHours}
+                        </ThemedText>
+                        <ThemedText>hours</ThemedText>
+                      </View>
+                    ) : null}
+                  </View>
+                </View>
+              </View>
+            </Card.Content>
+            <Card.Actions>
+              <View style={{flexDirection: "row", justifyContent: "flex-end"}}>
                 <ThemedText type="subtitle">
                   {totalSmokeSavings > 0 ? `${totalSmokeSavings}€ saved` : null}
                 </ThemedText>
-              </ThemedView>
-            </ThemedView>
-          </ThemedView>
+              </View>
+            </Card.Actions>
+          </Card>
         ) : null}
-      </ThemedView>
-      <ThemedView style={{alignItems: 'flex-end'}}>
-        <ThemedText type="subtitle">
-          {totalSoberSavings + totalSmokeSavings > 0 ? 'Total savings' : 'No savings yet'}
-        </ThemedText>
-        <ThemedText type="title">
-          {totalSoberSavings + totalSmokeSavings > 0 ? `${totalSoberSavings + totalSmokeSavings}€` : null}
-        </ThemedText>
-      </ThemedView>
-    </ThemedView>
+      </View>
+      <Card mode="contained" style={{backgroundColor: themes[colorScheme].colors.primaryContainer}}>
+        <Card.Content>
+          <View style={{alignItems: 'flex-end'}}>
+            <ThemedText type="subtitle">
+              {totalSoberSavings + totalSmokeSavings > 0 ? 'Total savings' : 'No savings yet'}
+            </ThemedText>
+            <ThemedText type="title">
+              {totalSoberSavings + totalSmokeSavings > 0 ? `${totalSoberSavings + totalSmokeSavings}€` : null}
+            </ThemedText>
+          </View>
+        </Card.Content>
+      </Card>
+    </View>
   );
 }
 

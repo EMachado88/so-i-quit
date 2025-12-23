@@ -1,11 +1,12 @@
 import dayjs from 'dayjs';
 import 'dayjs/locale/pt';
-import {DarkTheme, DefaultTheme, ThemeProvider} from '@react-navigation/native';
 import {Stack} from 'expo-router';
 import {StatusBar} from 'expo-status-bar';
 import 'react-native-reanimated';
 
 import {useColorScheme} from '@/hooks/use-color-scheme';
+import PaperProvider from "react-native-paper/src/core/PaperProvider";
+import {themes} from "@/constants/theme";
 
 dayjs.locale('pt');
 
@@ -14,14 +15,14 @@ export const unstable_settings = {
 };
 
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
+  const colorScheme = useColorScheme() ?? 'light';
 
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+    <PaperProvider theme={themes[colorScheme]}>
       <Stack>
         <Stack.Screen name="(tabs)" options={{headerShown: false}}/>
       </Stack>
       <StatusBar style="auto"/>
-    </ThemeProvider>
+    </PaperProvider>
   );
 }

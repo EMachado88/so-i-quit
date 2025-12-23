@@ -3,7 +3,8 @@
  * There are many other ways to style your app. For example, [Nativewind](https://www.nativewind.dev/), [Tamagui](https://tamagui.dev/), [unistyles](https://reactnativeunistyles.vercel.app), etc.
  */
 
-import { Platform } from 'react-native';
+import {Platform} from 'react-native';
+import {MD3DarkTheme, MD3LightTheme} from "react-native-paper";
 
 const tintColorLight = '#0a7ea4';
 const tintColorDark = '#fff';
@@ -51,3 +52,12 @@ export const Fonts = Platform.select({
     mono: "SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace",
   },
 });
+
+export const themes = {
+  light: {
+    ...MD3LightTheme
+  },
+  dark: {
+    ...MD3DarkTheme
+  }
+}
