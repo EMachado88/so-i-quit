@@ -2,6 +2,7 @@ import {StyleSheet, View} from 'react-native';
 import {ThemedText} from '@/components/themed-text';
 import {EffectCallback, useState} from "react";
 import {useFocusEffect} from "@react-navigation/core";
+import {Link} from '@react-navigation/native';
 import {fetchSettings} from "@/utils/fetch-settings";
 import dayjs from "dayjs";
 import {useColorScheme} from "@/hooks/use-color-scheme";
@@ -55,6 +56,9 @@ export default function HomeScreen() {
           <ThemedText
             type="title">{soberDate || smokeDate ? 'Congrats, bro!' : 'No data saved in settings'}</ThemedText>
         </View>
+        {!(soberDate || smokeDate) ? (
+          <Link screen="settings" style={{color: themes[colorScheme].colors.primary}}>Go to settings</Link>
+        ) : null}
         {soberDate ? (
           <Card>
             <Card.Title title="Sober for"/>
@@ -161,18 +165,20 @@ export default function HomeScreen() {
           </Card>
         ) : null}
       </View>
-      <Card mode="contained" style={{backgroundColor: themes[colorScheme].colors.primaryContainer}}>
-        <Card.Content>
-          <View style={{alignItems: 'flex-end'}}>
-            <ThemedText type="subtitle">
-              {totalSoberSavings + totalSmokeSavings > 0 ? 'Total savings' : 'No savings yet'}
-            </ThemedText>
-            <ThemedText type="title">
-              {totalSoberSavings + totalSmokeSavings > 0 ? `${totalSoberSavings + totalSmokeSavings}€` : null}
-            </ThemedText>
-          </View>
-        </Card.Content>
-      </Card>
+      {totalSoberSavings + totalSmokeSavings > 0 ? (
+        <Card mode="contained" style={{backgroundColor: themes[colorScheme].colors.primaryContainer}}>
+          <Card.Content>
+            <View style={{alignItems: 'flex-end'}}>
+              <ThemedText type="subtitle">
+                Total savings
+              </ThemedText>
+              <ThemedText type="title">
+                {`${totalSoberSavings + totalSmokeSavings}€`}
+              </ThemedText>
+            </View>
+          </Card.Content>
+        </Card>
+      ) : null}
     </View>
   );
 }
