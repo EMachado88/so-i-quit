@@ -1,13 +1,15 @@
-import {StyleSheet, TextInput, TouchableHighlight} from 'react-native';
+import {Alert, StyleSheet} from 'react-native';
 
 import {ThemedText} from '@/components/themed-text';
 import {ThemedView} from '@/components/themed-view';
-import {IconSymbol} from "@/components/ui/icon-symbol";
 import {DarkTheme} from "@react-navigation/native";
 import {DateTimePickerAndroid} from "@react-native-community/datetimepicker";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {useEffect, useState} from "react";
 import {fetchSettings} from "@/utils/fetch-settings";
+import Divider from "react-native-paper/src/components/Divider";
+import TextInput from "react-native-paper/src/components/TextInput/TextInput";
+import Button from "react-native-paper/src/components/Button/Button";
 
 export default function TabTwoScreen() {
   const [soberDate, setSoberDate] = useState<string | null>(null);
@@ -27,135 +29,170 @@ export default function TabTwoScreen() {
         </ThemedText>
       </ThemedView>
 
-      <ThemedView style={{marginBottom: 20}}>
+      <Divider/>
+
+      <ThemedView>
         <ThemedText
           type="subtitle" style={{marginBottom: 15}}>
           Alcohol free
         </ThemedText>
-        <ThemedView style={{flexDirection: "row", justifyContent: "space-between", alignItems: "center"}}>
+        <ThemedView
+          style={{flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 10}}>
           <ThemedView style={{flexDirection: 'row', alignItems: 'center'}}>
-            <ThemedText type="defaultSemiBold">
+            <Button compact={true} icon="pencil" mode="text"
+                    contentStyle={{flexDirection: 'row-reverse'}}
+                    onPress={() => DateTimePickerAndroid.open({
+                      mode: 'date',
+                      value: soberDate ? new Date(soberDate) : new Date(),
+                      maximumDate: new Date(),
+                      style: {backgroundColor: DarkTheme.colors.card},
+                      onChange: async (_event, date) => {
+                        if (date) {
+                          setSoberDate(date.toISOString());
+                          await AsyncStorage.setItem('soberDate', date.toISOString());
+                        }
+                      }
+                    })}
+            >
               {soberDate ? new Date(soberDate).toLocaleDateString() : "--/--/----"}
-            </ThemedText>
-            <TouchableHighlight
-              onPress={() => DateTimePickerAndroid.open({
-                mode: 'date',
-                value: soberDate ? new Date(soberDate) : new Date(),
-                maximumDate: new Date(),
-                style: {backgroundColor: DarkTheme.colors.card},
-                onChange: async (_event, date) => {
-                  if (date) {
-                    setSoberDate(date.toISOString());
-                    await AsyncStorage.setItem('soberDate', date.toISOString());
-                  }
-                }
-              })}
-              style={{padding: 10, borderRadius: 8}}>
-              <IconSymbol name="pencil" color={DarkTheme.colors.text}/>
-            </TouchableHighlight>
+            </Button>
           </ThemedView>
           <ThemedView style={{flexDirection: 'row', alignItems: 'center'}}>
-            <ThemedText type="defaultSemiBold">
+            <Button compact={true} icon="pencil" mode="text"
+                    contentStyle={{flexDirection: 'row-reverse'}}
+                    onPress={() => DateTimePickerAndroid.open({
+                      mode: 'time',
+                      value: soberDate ? new Date(soberDate) : new Date(),
+                      maximumDate: new Date(),
+                      style: {backgroundColor: DarkTheme.colors.card},
+                      onChange: async (_event, date) => {
+                        if (date) {
+                          setSoberDate(date.toISOString());
+                          await AsyncStorage.setItem('soberDate', date.toISOString());
+                        }
+                      }
+                    })}
+            >
               {soberDate ? new Date(soberDate).toLocaleTimeString() : '--:--'}
-            </ThemedText>
-            <TouchableHighlight
-              onPress={() => DateTimePickerAndroid.open({
-                mode: 'time',
-                value: soberDate ? new Date(soberDate) : new Date(),
-                maximumDate: new Date(),
-                style: {backgroundColor: DarkTheme.colors.card},
-                onChange: async (_event, date) => {
-                  if (date) {
-                    setSoberDate(date.toISOString());
-                    await AsyncStorage.setItem('soberDate', date.toISOString());
-                  }
-                }
-              })}
-              style={{padding: 10, borderRadius: 8}}>
-              <IconSymbol name="pencil" color={DarkTheme.colors.text}/>
-            </TouchableHighlight>
+            </Button>
           </ThemedView>
         </ThemedView>
-        <ThemedView style={{flexDirection: "row", alignItems: "center"}}>
-          <TextInput value={soberSavings || undefined}
-                     editable={!!soberDate}
-                     placeholder="Savings"
-                     placeholderTextColor={DarkTheme.colors.text}
-                     style={styles.input}
-                     keyboardType="number-pad"
-                     onChange={async (event) => {
-                       setSoberSavings(event.nativeEvent.text)
-                       await AsyncStorage.setItem('soberSavings', event.nativeEvent.text)
-                     }}/>
-          <ThemedText>
-            €/day
-          </ThemedText>
+        <ThemedView style={{flexDirection: "row", justifyContent: "space-between", alignItems: "center"}}>
+          <TextInput
+            label="Savings"
+            value={soberSavings || undefined}
+            keyboardType="number-pad"
+            placeholder="- - "
+            mode="outlined"
+            right={<TextInput.Affix text="€/day"/>}
+            onChangeText={async (text) => {
+              const absValue = text.replace(/[^0-9.]/g, '');
+              setSoberSavings(absValue)
+              await AsyncStorage.setItem('soberSavings', absValue)
+            }}
+          />
+
+          <Button compact={true} icon="refresh" contentStyle={{flexDirection: 'row-reverse'}} onPress={() => {
+            Alert.alert("Reset Sober Date", "Are you sure you want to reset your sober date?", [
+              {
+                text: "Cancel",
+                style: "cancel"
+              },
+              {
+                text: "Reset",
+                style: "destructive",
+                onPress: async () => {
+                  setSoberDate(null);
+                  await AsyncStorage.removeItem('soberDate');
+                  setSoberSavings(null);
+                  await AsyncStorage.removeItem('soberSavings');
+                }
+              }
+            ])
+          }}>Reset</Button>
         </ThemedView>
       </ThemedView>
+
+      <Divider/>
 
       <ThemedView>
         <ThemedText
           type="subtitle" style={{marginBottom: 15}}>
           Smoke free
         </ThemedText>
-        <ThemedView style={{flexDirection: "row", justifyContent: "space-between", alignItems: "center"}}>
+        <ThemedView
+          style={{flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 10}}>
           <ThemedView style={{flexDirection: 'row', alignItems: 'center'}}>
-            <ThemedText type="defaultSemiBold">
+            <Button compact={true} icon="pencil" mode="text"
+                    contentStyle={{flexDirection: 'row-reverse'}}
+                    onPress={() => DateTimePickerAndroid.open({
+                      mode: 'date',
+                      value: smokeDate ? new Date(smokeDate) : new Date(),
+                      maximumDate: new Date(),
+                      style: {backgroundColor: DarkTheme.colors.card},
+                      onChange: async (_event, date) => {
+                        if (date) {
+                          setSmokeDate(date.toISOString());
+                          await AsyncStorage.setItem('smokeDate', date.toISOString());
+                        }
+                      }
+                    })}
+            >
               {smokeDate ? new Date(smokeDate).toLocaleDateString() : "--/--/----"}
-            </ThemedText>
-            <TouchableHighlight
-              onPress={() => DateTimePickerAndroid.open({
-                mode: 'date',
-                value: smokeDate ? new Date(smokeDate) : new Date(),
-                maximumDate: new Date(),
-                style: {backgroundColor: DarkTheme.colors.card},
-                onChange: async (_event, date) => {
-                  if (date) {
-                    setSmokeDate(date.toISOString());
-                    await AsyncStorage.setItem('smokeDate', date.toISOString());
-                  }
-                }
-              })}
-              style={{padding: 10, borderRadius: 8}}>
-              <IconSymbol name="pencil" color={DarkTheme.colors.text}/>
-            </TouchableHighlight>
+            </Button>
           </ThemedView>
           <ThemedView style={{flexDirection: 'row', alignItems: 'center'}}>
-            <ThemedText type="defaultSemiBold">
+            <Button compact={true} icon="pencil" mode="text"
+                    contentStyle={{flexDirection: 'row-reverse'}}
+                    onPress={() => DateTimePickerAndroid.open({
+                      mode: 'time',
+                      value: smokeDate ? new Date(smokeDate) : new Date(),
+                      maximumDate: new Date(),
+                      style: {backgroundColor: DarkTheme.colors.card},
+                      onChange: async (_event, date) => {
+                        if (date) {
+                          setSmokeDate(date.toISOString());
+                          await AsyncStorage.setItem('smokeDate', date.toISOString());
+                        }
+                      }
+                    })}
+            >
               {smokeDate ? new Date(smokeDate).toLocaleTimeString() : '--:--'}
-            </ThemedText>
-            <TouchableHighlight
-              onPress={() => DateTimePickerAndroid.open({
-                mode: 'time',
-                value: smokeDate ? new Date(smokeDate) : new Date(),
-                maximumDate: new Date(),
-                style: {backgroundColor: DarkTheme.colors.card},
-                onChange: async (_event, date) => {
-                  if (date) {
-                    setSmokeDate(date.toISOString());
-                    await AsyncStorage.setItem('smokeDate', date.toISOString());
-                  }
-                }
-              })}
-              style={{padding: 10, borderRadius: 8}}>
-              <IconSymbol name="pencil" color={DarkTheme.colors.text}/>
-            </TouchableHighlight>
+            </Button>
           </ThemedView>
         </ThemedView>
-        <ThemedView style={{flexDirection: "row", alignItems: "center"}}>
-          <TextInput value={smokeSavings || undefined}
-                     editable={!!smokeDate}
-                     placeholder="Savings"
-                     placeholderTextColor={DarkTheme.colors.text}
-                     style={styles.input}
-                     keyboardType="number-pad"
-                     onChange={async (event) => {
-                       setSmokeSavings(event.nativeEvent.text)
-                       await AsyncStorage.setItem('smokeSavings', event.nativeEvent.text)
-                     }}/>
-          <ThemedText>
-            €/day
-          </ThemedText>
+        <ThemedView style={{flexDirection: "row", justifyContent: 'space-between', alignItems: "center"}}>
+          <TextInput
+            label="Savings"
+            value={smokeSavings || undefined}
+            keyboardType="number-pad"
+            placeholder="- - "
+            mode="outlined"
+            right={<TextInput.Affix text="€/day"/>}
+            onChangeText={async (text) => {
+              const absValue = text.replace(/[^0-9.]/g, '');
+              setSmokeSavings(absValue)
+              await AsyncStorage.setItem('smokeSavings', absValue)
+            }}
+          />
+          <Button compact={true} icon="refresh" contentStyle={{flexDirection: 'row-reverse'}} onPress={() => {
+            Alert.alert("Reset Smoke Date", "Are you sure you want to reset your smoke free date?", [
+              {
+                text: "Cancel",
+                style: "cancel"
+              },
+              {
+                text: "Reset",
+                style: "destructive",
+                onPress: async () => {
+                  setSmokeDate(null);
+                  await AsyncStorage.removeItem('smokeDate');
+                  setSmokeSavings(null);
+                  await AsyncStorage.removeItem('smokeSavings');
+                }
+              }
+            ])
+          }}>Reset</Button>
         </ThemedView>
       </ThemedView>
     </ThemedView>
