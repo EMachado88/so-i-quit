@@ -5,7 +5,7 @@ import { fetchSettings } from "@/utils/fetch-settings";
 import { useFocusEffect } from "@react-navigation/core";
 import { Link } from "@react-navigation/native";
 import dayjs from "dayjs";
-import React, { EffectCallback, useEffect, useState } from "react";
+import React, { EffectCallback, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import Card from "react-native-paper/src/components/Card/Card";
 
@@ -16,7 +16,6 @@ export default function HomeScreen() {
   const [soberSavings, setSoberSavings] = useState<string | null>(null);
   const [smokeDate, setSmokeDate] = useState<string | null>(null);
   const [smokeSavings, setSmokeSavings] = useState<string | null>(null);
-  const [, setUpdateTrigger] = useState(0);
 
   // Helper functions to safely parse and format dates/numbers
   const daysSince = (isoDate: string | null) => {
@@ -82,14 +81,6 @@ export default function HomeScreen() {
         setSmokeSavings,
       ) as unknown as EffectCallback,
   );
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setUpdateTrigger((prev) => prev + 1);
-    }, 1000);
-
-    return () => clearInterval(interval);
-  }, []);
 
   return (
     <View style={styles.pageWrapper}>
