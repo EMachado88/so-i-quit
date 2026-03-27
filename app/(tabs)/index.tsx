@@ -105,6 +105,7 @@ export default function HomeScreen() {
           <Link
             screen="settings"
             style={{ color: themes[colorScheme].colors.primary }}
+            params={{}}
           >
             Go to settings
           </Link>
