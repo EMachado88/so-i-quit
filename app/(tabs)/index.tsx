@@ -2,20 +2,31 @@ import { ThemedText } from "@/components/themed-text";
 import { themes } from "@/constants/theme";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 import { fetchSettings } from "@/utils/fetch-settings";
-import { useFocusEffect } from "@react-navigation/core";
+import { useIsFocused } from "@react-navigation/core";
 import { Link } from "@react-navigation/native";
 import dayjs from "dayjs";
-import React, { EffectCallback, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import Card from "react-native-paper/src/components/Card/Card";
 
 export default function HomeScreen() {
   const colorScheme = useColorScheme() ?? "light";
 
+  const isFocused = useIsFocused();
   const [soberDate, setSoberDate] = useState<string | null>(null);
   const [soberSavings, setSoberSavings] = useState<string | null>(null);
   const [smokeDate, setSmokeDate] = useState<string | null>(null);
   const [smokeSavings, setSmokeSavings] = useState<string | null>(null);
+  const [soberYears, setSoberYears] = useState(0);
+  const [soberMonths, setSoberMonths] = useState(0);
+  const [soberDays, setSoberDays] = useState(0);
+  const [soberHours, setSoberHours] = useState(0);
+  const [totalSoberSavings, setTotalSoberSavings] = useState(0);
+  const [smokeYears, setSmokeYears] = useState(0);
+  const [smokeMonths, setSmokeMonths] = useState(0);
+  const [smokeDays, setSmokeDays] = useState(0);
+  const [smokeHours, setSmokeHours] = useState(0);
+  const [totalSmokeSavings, setTotalSmokeSavings] = useState(0);
 
   // Helper functions to safely parse and format dates/numbers
   const daysSince = (isoDate: string | null) => {
@@ -52,35 +63,57 @@ export default function HomeScreen() {
     return isNaN(n) ? 0 : n;
   };
 
-  const {
-    years: soberYears,
-    months: soberMonths,
-    days: soberDays,
-    hours: soberHours,
-  } = breakdown(soberDate);
-  const totalSoberSavings = daysSince(soberDate) * parseSavings(soberSavings);
-
-  const {
-    years: smokeYears,
-    months: smokeMonths,
-    days: smokeDays,
-    hours: smokeHours,
-  } = breakdown(smokeDate);
-  const totalSmokeSavings = daysSince(smokeDate) * parseSavings(smokeSavings);
-
   const formatAmount = (value: number) => {
     return `${Math.round(value * 100) / 100}€`;
   };
 
-  useFocusEffect(
-    () =>
+  useEffect(() => {
+    if (!isFocused) return;
+
+    const fetchSettingsAndCalculate = () => {
       fetchSettings(
         setSoberDate,
         setSoberSavings,
         setSmokeDate,
         setSmokeSavings,
-      ) as unknown as EffectCallback,
-  );
+      );
+
+      const {
+        years: soberYears,
+        months: soberMonths,
+        days: soberDays,
+        hours: soberHours,
+      } = breakdown(soberDate);
+      const totalSoberSavings =
+        daysSince(soberDate) * parseSavings(soberSavings);
+
+      const {
+        years: smokeYears,
+        months: smokeMonths,
+        days: smokeDays,
+        hours: smokeHours,
+      } = breakdown(smokeDate);
+      const totalSmokeSavings =
+        daysSince(smokeDate) * parseSavings(smokeSavings);
+
+      setSmokeDate(smokeDate);
+      setSoberYears(soberYears);
+      setSoberMonths(soberMonths);
+      setSoberDays(soberDays);
+      setSoberHours(soberHours);
+      setTotalSoberSavings(totalSoberSavings);
+      setSmokeYears(smokeYears);
+      setSmokeMonths(smokeMonths);
+      setSmokeDays(smokeDays);
+      setSmokeHours(smokeHours);
+      setTotalSmokeSavings(totalSmokeSavings);
+    };
+
+    fetchSettingsAndCalculate();
+
+    const interval = setInterval(fetchSettingsAndCalculate, 1000);
+    return () => clearInterval(interval);
+  }, [isFocused, smokeDate, smokeSavings, soberDate, soberSavings]);
 
   return (
     <View style={styles.pageWrapper}>
@@ -88,7 +121,7 @@ export default function HomeScreen() {
         <View style={{ marginBottom: 20 }}>
           <ThemedText type="title">
             {soberDate || smokeDate
-              ? "Congrats, bro!"
+              ? "Congratulations on your progress!"
               : "No data saved in settings"}
           </ThemedText>
         </View>
@@ -103,7 +136,7 @@ export default function HomeScreen() {
         )}
         {soberDate && (
           <Card>
-            <Card.Title title="Sober for" />
+            <Card.Title title="Alcohol free for" />
             <Card.Content>
               <View>
                 <View>
@@ -146,9 +179,9 @@ export default function HomeScreen() {
               <View
                 style={{ flexDirection: "row", justifyContent: "flex-end" }}
               >
-                <ThemedText type="subtitle">
+                <ThemedText style={{ marginInlineEnd: 5 }}>
                   {totalSoberSavings > 0
-                    ? `${formatAmount(totalSoberSavings)} saved`
+                    ? formatAmount(totalSoberSavings)
                     : null}
                 </ThemedText>
               </View>
@@ -201,9 +234,9 @@ export default function HomeScreen() {
               <View
                 style={{ flexDirection: "row", justifyContent: "flex-end" }}
               >
-                <ThemedText type="subtitle">
+                <ThemedText style={{ marginInlineEnd: 5 }}>
                   {totalSmokeSavings > 0
-                    ? `${formatAmount(totalSmokeSavings)} saved`
+                    ? formatAmount(totalSmokeSavings)
                     : null}
                 </ThemedText>
               </View>
